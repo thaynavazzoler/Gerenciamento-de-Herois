@@ -92,3 +92,36 @@ app.delete("/herois/:id", async (req, res) => {
 app.listen(3000, () => {
   console.log("Servidor iniciado na porta 3000");
 });
+
+// Filtro por nome herói
+
+app.get("/herois/nome/:nome", async (req, res) => {
+    try {
+        const { nome } = req.params;
+        const { rows } = await pool.query("SELECT * FROM herois WHERE nome = $1", [nome]);
+        res.status(200).send({
+            message: "Herois encontrados com sucesso!",
+            herois: rows,
+          });
+    } catch (error) {
+        console.error("Erro ao buscar herois", error);
+        res.status(500).send("Erro ao buscar herois");
+    }
+});
+
+// Filtro por poder herói
+
+app.get("/herois/poder/:poder", async (req, res) => {
+    try {
+        const { poder } = req.params;
+        const { rows } = await pool.query("SELECT * FROM herois WHERE poder = $1", [poder]);
+        res.status(200).send({
+            message: "Herois encontrados com sucesso!",
+            herois: rows,
+          });
+    } catch (error) {
+        console.error("Erro ao buscar herois", error);
+        res.status(500).send("Erro ao buscar herois");
+    }
+});
+
