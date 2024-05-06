@@ -142,10 +142,9 @@ app.get("/batalhar/:idHeroi1/:idHeroi2", async (req, res) => {
   try {
     const { idHeroi1, idHeroi2 } = req.params;
 
-    // Consulta SQL para recuperar os dados dos dois heróis em uma única consulta usando INNER JOIN
     const query = `
-        SELECT nome FROM herois WHERE id = $1 OR id = $2
-        `;
+      SELECT * FROM herois WHERE id = $1 OR id = $2
+    `;
 
     const { rows } = await pool.query(query, [idHeroi1, idHeroi2]);
 
@@ -157,21 +156,25 @@ app.get("/batalhar/:idHeroi1/:idHeroi2", async (req, res) => {
     const heroi2 = rows[1];
 
     while (heroi1.pontosdevida > 0 && heroi2.pontosdevida > 0) {
-      heroi2.pontosdevida -= heroi1.ataque - heroi2.defesa;
-      heroi1.pontosdevida -= heroi2.ataque - heroi1.defesa;
+      heroi2.pontosdevida -= Math.max(heroi1.ataque - heroi2.defesa, 0);
+      heroi1.pontosdevida -= Math.max(heroi2.ataque - heroi1.defesa, 0);
     }
-    if (heroi1.pontosdevida > heroi2.pontosdevida) {
-      vencedor = heroi1.nome;
-    }
-    if (heroi1.pontosdevida < heroi2.pontosdevida) {
-      vencedor = heroi2.nome;
-    } else {
+
+    let vencedor, perdedor;
+    if (heroi1.pontosdevida <= 0 && heroi2.pontosdevida <= 0) {
       vencedor = "Empate";
+    } else if (heroi1.pontosdevida <= 0) {
+      vencedor = heroi2;
+      perdedor = heroi1;
+    } else {
+      vencedor = heroi1;
+      perdedor = heroi2;
     }
 
-    const perdedor = vencedor === heroi1.nome ? heroi2.nome : heroi1.nome;
+    if (vencedor !== "Empate") {
+      addHistorico(vencedor, perdedor);
+    }
 
-    addHistorico(vencedor, perdedor);
     res.status(200).send({
       message: "Batalha realizada com sucesso!",
       vencedor: vencedor,
@@ -183,13 +186,13 @@ app.get("/batalhar/:idHeroi1/:idHeroi2", async (req, res) => {
 });
 
 const addHistorico = async (vencedor, perdedor) => {
-  const Hoje = new Date();
+  let data = new Date();
+  data = data.toISOString().split("T")[0];
   try {
-    const query = `
-            INSERT INTO historico_batalhas (vencedor, perdedor, data) VALUES ($1, $2, $3)
-            `;
-
-    await pool.query(query, [vencedor, perdedor, Hoje]);
+    await pool.query(
+      "INSERT INTO historico (vencedor, perdedor, data) VALUES ($1, $2, $3)",
+      [vencedor.id, perdedor.id, data]
+    );
   } catch (error) {
     console.error("Erro ao adicionar histórico", error);
   }
@@ -197,7 +200,9 @@ const addHistorico = async (vencedor, perdedor) => {
 
 app.get("/historico", async (req, res) => {
   try {
-    const { rows } = await pool.query("SELECT * FROM historico_batalhas");
+    const { rows } = await pool.query(
+      "SELECT h.nome AS vencedor, h2.nome AS perdedor, data FROM historico JOIN herois h ON h.id = historico.vencedor JOIN herois h2 ON h2.id = historico.perdedor;"
+    );
     res.status(200).send({
       message: "Histórico de batalhas encontrado com sucesso!",
       historico: rows,
