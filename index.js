@@ -72,3 +72,18 @@ app.put("/herois/:id", async (req, res) => {
         res.status(500).send("Erro ao atualizar heroi");
     }
 });
+
+
+app.delete("/herois/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { rows } = await pool.query("DELETE FROM herois WHERE id = $1 RETURNING *", [id]);
+        res.status(200).send({
+            message: "Heroi deletado com sucesso!",
+            herois: rows,
+          });
+    } catch (error) {
+        console.error("Erro ao deletar heroi", error);
+        res.status(500).send("Erro ao deletar heroi");
+    }
+});
