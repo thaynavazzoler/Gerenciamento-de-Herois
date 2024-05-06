@@ -125,3 +125,43 @@ app.get("/herois/poder/:poder", async (req, res) => {
     }
 });
 
+app.get("/batalhar/:idHeroi1/:idHeroi2", async (req, res) => {
+    try {
+        const { idHeroi1, idHeroi2 } = req.params;
+
+        // Consulta SQL para recuperar os dados dos dois heróis em uma única consulta usando INNER JOIN
+        const query = `
+            SELECT h1.*, h2.*
+            FROM herois AS h1
+            INNER JOIN herois AS h2 ON h1.id = $1 AND h2.id = $2
+        `;
+
+        const { rows } = await pool.query(query, [idHeroi1, idHeroi2]);
+
+        // Verificar se os heróis foram encontrados
+        if (rows.length !== 2) {
+            return res.status(404).send("Heróis não encontrados");
+        }
+
+        const heroi1 = rows[0];
+        const heroi2 = rows[1];
+
+        // Comparar apenas os níveis dos heróis para determinar o vencedor da batalha
+        let vencedor;
+        if (heroi1.nivel > heroi2.nivel) {
+            vencedor = heroi1.nome;
+        } else if (heroi1.nivel < heroi2.nivel) {
+            vencedor = heroi2.nome;
+        } else {
+            vencedor = "Empate";
+        }
+
+        res.status(200).send({
+            message: "Batalha realizada com sucesso!",
+            vencedor: vencedor,
+        });
+    } catch (error) {
+        console.error("Erro ao realizar batalha", error);
+        res.status(500).send("Erro ao realizar batalha");
+    }
+});
