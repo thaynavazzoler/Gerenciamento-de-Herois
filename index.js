@@ -6,10 +6,11 @@ const app = express();
 const pool = new Pool({
     user: "postgres",
     host: "localhost",
-    database: " batalhas_herois",
+    database: "batalhas_herois",
     password: "ds564",
-    port: 3000
+    port: 7007 // Porta padrão do PostgreSQL
 });
+
 
 app.use(express.json());
 
@@ -46,15 +47,15 @@ app.get("/herois/:id", async (req, res) => {
 
 app.post("/herois", async (req, res) => {
     try {
-        const { nome, poder } = req.body;
-        const { rows } = await pool.query("INSERT INTO herois (nome, poder) VALUES ($1, $2) RETURNING *", [nome, poder]);
-        res.status(200).send({
-            message: "Heroi inserido com sucesso!",
+        const { nome, poder, nivel, pontosdevida, ataque, defesa } = req.body;
+        const { rows } = await pool.query("INSERT INTO herois (nome, poder, nivel, pontosdevida, ataque, defesa) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *", [nome, poder, nivel, pontosdevida, ataque, defesa]);
+        res.status(201).send({
+            message: "Heroi criado com sucesso!",
             herois: rows,
           });
     } catch (error) {
-        console.error("Erro ao inserir heroi", error);
-        res.status(500).send("Erro ao inserir heroi");
+        console.error("Erro ao criar heroi", error);
+        res.status(500).send("Erro ao criar heroi");
     }
 });
 
@@ -86,4 +87,8 @@ app.delete("/herois/:id", async (req, res) => {
         console.error("Erro ao deletar heroi", error);
         res.status(500).send("Erro ao deletar heroi");
     }
+});
+
+app.listen(3000, () => {
+  console.log("Servidor iniciado na porta 3000");
 });
