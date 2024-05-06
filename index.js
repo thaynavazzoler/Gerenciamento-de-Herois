@@ -57,3 +57,18 @@ app.post("/herois", async (req, res) => {
         res.status(500).send("Erro ao inserir heroi");
     }
 });
+
+app.put("/herois/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { nome, poder } = req.body;
+        const { rows } = await pool.query("UPDATE herois SET nome = $1, poder = $2 WHERE id = $3 RETURNING *", [nome, poder, id]);
+        res.status(200).send({
+            message: "Heroi atualizado com sucesso!",
+            herois: rows,
+          });
+    } catch (error) {
+        console.error("Erro ao atualizar heroi", error);
+        res.status(500).send("Erro ao atualizar heroi");
+    }
+});
