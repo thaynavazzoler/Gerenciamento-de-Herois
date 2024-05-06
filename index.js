@@ -43,3 +43,17 @@ app.get("/herois/:id", async (req, res) => {
         res.status(500).send("Erro ao buscar herois");
     }
 });
+
+app.post("/herois", async (req, res) => {
+    try {
+        const { nome, poder } = req.body;
+        const { rows } = await pool.query("INSERT INTO herois (nome, poder) VALUES ($1, $2) RETURNING *", [nome, poder]);
+        res.status(200).send({
+            message: "Heroi inserido com sucesso!",
+            herois: rows,
+          });
+    } catch (error) {
+        console.error("Erro ao inserir heroi", error);
+        res.status(500).send("Erro ao inserir heroi");
+    }
+});
