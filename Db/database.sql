@@ -1,4 +1,4 @@
-CREATE DATABASE IF NOT EXISTS batalhas_herois;
+CREATE DATABASE batalhas_herois;
 
 \c batalhas_herois;
 
@@ -13,18 +13,24 @@ CREATE TABLE herois (
 );
 
 CREATE TABLE batalhas (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id SERIAL PRIMARY KEY,
     hero1_id INT,
     hero2_id INT,
     vencedor_id INT,
-    FOREIGN KEY (hero1_id) REFERENCES heroes(id),
-    FOREIGN KEY (hero2_id) REFERENCES heroes(id),
-    FOREIGN KEY (vencedor_id) REFERENCES heroes(id)
+    perdedor_id INT,
+    FOREIGN KEY (hero1_id) REFERENCES herois(id),
+    FOREIGN KEY (hero2_id) REFERENCES herois(id),
+    FOREIGN KEY (vencedor_id) REFERENCES herois(id),
+    FOREIGN KEY (perdedor_id) REFERENCES herois(id)
 );
 -- Inserir dados dos heróis da DC Comics
-INSERT INTO herois (nome, poder, nivel, pontosdevida, ataque, defesa) VALUES ('Superman', 'Super força, voo, visão de calor', 100, 1000, 95, 90),
-INSERT INTO herois (nome, poder, nivel, pontosdevida, ataque, defesa) VALUES ('Batman', 'Habilidades de detetive, artes marciais', 95, 800, 85, 95),
-INSERT INTO herois (nome, poder, nivel, pontosdevida, ataque, defesa) VALUES ('Wonder Woman', 'Super força, agilidade, habilidades divinas', 98, 900, 92, 88),
-INSERT INTO herois (nome, poder, nivel, pontosdevida, ataque, defesa) VALUES ('Flash', 'Super velocidade', 90, 750, 98, 80),
+INSERT INTO herois (nome, poder, nivel, pontosdevida, ataque, defesa) VALUES ('Batman', 'Habilidades de detetive, artes marciais', 95, 800, 85, 95);
+
+INSERT INTO herois (nome, poder, nivel, pontosdevida, ataque, defesa) VALUES ('Wonder Woman', 'Super força, agilidade, habilidades divinas', 98, 900, 92, 88);
+
+INSERT INTO herois (nome, poder, nivel, pontosdevida, ataque, defesa) VALUES ('Flash', 'Super velocidade', 90, 750, 98, 80);
+
 INSERT INTO herois (nome, poder, nivel, pontosdevida, ataque, defesa) VALUES ('Aquaman', 'Comunicação e controle de animais marinhos', 92, 850, 88, 92);
 
+
+SELECT * FROM herois;
