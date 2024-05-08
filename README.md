@@ -28,6 +28,7 @@ Clone este repositório em sua máquina local usando o seguinte comando:
 
 ```bash
 git clone https://github.com/thaynavazzoler/Gerenciamento-de-Herois.git
+ ```
 
 <h2> Instale as dependências </h2>
 cd seu-projeto
