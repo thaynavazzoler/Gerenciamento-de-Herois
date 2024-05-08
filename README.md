@@ -1,4 +1,4 @@
-# pegjs-to-ast
+# 🦸‍♂️ Projeto sobre super-heróis
 
 Converter de Pegjs para AST do JavaScript.
 

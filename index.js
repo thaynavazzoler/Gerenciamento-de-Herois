@@ -8,7 +8,7 @@ const pool = new Pool({
   host: "localhost",
   database: "batalhas_herois",
   password: "ds564",
-  port: 5432, // Porta padrão do PostgreSQL
+  port: 7007, // Porta padrão do PostgreSQL
 });
 
 app.use(express.json());
@@ -110,13 +110,18 @@ app.get("/herois/nome/:nome", async (req, res) => {
     const { rows } = await pool.query("SELECT * FROM herois WHERE nome = $1", [
       nome,
     ]);
+    if (rows.length === 0) {
+      return res.status(404).send({
+        message: "Nenhum herói encontrado com esse nome.",
+      });
+    }
     res.status(200).send({
-      message: "Herois encontrados com sucesso!",
+      message: "Heróis encontrados com sucesso!",
       herois: rows,
     });
   } catch (error) {
-    console.error("Erro ao buscar herois", error);
-    res.status(500).send("Erro ao buscar herois");
+    console.error("Erro ao buscar heróis", error);
+    res.status(500).send("Erro ao buscar heróis");
   }
 });
 
@@ -128,13 +133,18 @@ app.get("/herois/poder/:poder", async (req, res) => {
     const { rows } = await pool.query("SELECT * FROM herois WHERE poder = $1", [
       poder,
     ]);
+    if (rows.length === 0) {
+      return res.status(404).send({
+        message: "Nenhum herói encontrado com esse poder.",
+      });
+    }
     res.status(200).send({
-      message: "Herois encontrados com sucesso!",
+      message: "Heróis encontrados com sucesso!",
       herois: rows,
     });
   } catch (error) {
-    console.error("Erro ao buscar herois", error);
-    res.status(500).send("Erro ao buscar herois");
+    console.error("Erro ao buscar heróis", error);
+    res.status(500).send("Erro ao buscar heróis");
   }
 });
 
