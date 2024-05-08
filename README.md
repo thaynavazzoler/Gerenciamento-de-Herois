@@ -31,8 +31,12 @@ git clone https://github.com/thaynavazzoler/Gerenciamento-de-Herois.git
  ```
 
 ### 2. Instale as dependências 
+```bash
 cd seu-projeto
+ ```
+ ```bash
 npm install
+ ```
 
 ### 3. Configure o banco de dados PostgreSQL:
 1. Certifique-se de ter o PostgreSQL instalado em sua máquina.
@@ -44,7 +48,7 @@ npm install
 4. Configure as credenciais do banco de dados:
 
     No arquivo `index.js`, altere as informações de conexão do pool do PostgreSQL para corresponder às suas credenciais.
-    
+
 ### 4.  Executar o Servidor
 ```bash
 npm start  
