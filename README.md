@@ -20,6 +20,22 @@
 - dotenv
 
 <h2> Como Usar: </h2>
+Para utilizar este projeto em sua máquina local, siga os passos abaixo:
+
+### 1. Clonar o Repositório
+
+Clone este repositório em sua máquina local usando o seguinte comando:
+
+```bash
+git clone https://github.com/seu-usuario/seu-projeto.git
+
+
+cd seu-projeto
+npm install
+
+npm start
+
+
 
 
 <h2> Rotas: </h2>
