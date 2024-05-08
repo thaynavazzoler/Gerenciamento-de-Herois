@@ -27,12 +27,13 @@ Para utilizar este projeto em sua máquina local, siga os passos abaixo:
 Clone este repositório em sua máquina local usando o seguinte comando:
 
 ```bash
-git clone https://github.com/seu-usuario/seu-projeto.git
+git clone https://github.com/thaynavazzoler/Gerenciamento-de-Herois.git
 
-
+<h2> Instale as dependências </h2>
 cd seu-projeto
 npm install
 
+<h2> Instale as dependências </h2>
 npm start
 
 
