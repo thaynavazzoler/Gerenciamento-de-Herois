@@ -30,15 +30,25 @@ Clone este repositório em sua máquina local usando o seguinte comando:
 git clone https://github.com/thaynavazzoler/Gerenciamento-de-Herois.git
  ```
 
-<h2> Instale as dependências </h2>
+### 2. Instale as dependências 
 cd seu-projeto
 npm install
 
-<h2> Instale as dependências </h2>
-npm start
+### 3. Configure o banco de dados PostgreSQL:
+1. Certifique-se de ter o PostgreSQL instalado em sua máquina.
 
+2. Crie um banco de dados chamado `harrypotter`.
 
+3. Execute o script fornecido em `database.sql` para criar as tabelas `bruxos` e `varinhas`.
 
+4. Configure as credenciais do banco de dados:
+
+    No arquivo `index.js`, altere as informações de conexão do pool do PostgreSQL para corresponder às suas credenciais.
+    
+### 4.  Executar o Servidor
+```bash
+npm start  
+```
 
 <h2> Rotas: </h2>
 
