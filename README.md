@@ -1,6 +1,8 @@
 # 🦸‍♂️ Projeto sobre super-heróis
-# titulo
+
 # descrição
+
+🦸‍♂️ Projeto sobre super-heróis, utilizando um banco de dados PostgreSQL para possibilitar operações CRUD completas para os heróis. 📚💥🦹‍♂️
 
 # img
 
