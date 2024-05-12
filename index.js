@@ -10,8 +10,8 @@ const pool = new Pool({
   user: "postgres",
   host: "localhost",
   database: "batalhas_herois",
-  password: "ds564",
-  port: 7007, // Porta padrão do PostgreSQL
+  password: "11by",
+  port: 5432, // Porta padrão do PostgreSQL
 });
 
 app.use(express.json());
@@ -134,115 +134,65 @@ app.get("/herois/nome/:nome", async (req, res) => {
   }
 });
 
-// Rota para buscar heróis pelo poder
-app.get("/herois/poder/:poder", async (req, res) => {
+// Rota para batalhar dois heróis
+app.get("/batalhar/:idHeroi1/:idHeroi2", async (req, res) => {
   try {
-    const { poder } = req.params;
-    const { rows } = await pool.query("SELECT * FROM herois WHERE poder = $1", [
-      poder,
-    ]);
-    if (rows.length === 0) {
+    const { idHeroi1, idHeroi2 } = req.params;
+    // Consulta ao banco de dados para obter informações do primeiro herói
+    const { rows: rowsHeroi1 } = await pool.query(
+      "SELECT * FROM herois WHERE id = $1",
+      [idHeroi1]
+    );
+    // Consulta ao banco de dados para obter informações do segundo herói
+    const { rows: rowsHeroi2 } = await pool.query(
+      "SELECT * FROM herois WHERE id = $1",
+      [idHeroi2]
+    );
+// Verifica se os heróis existem
+    if (rowsHeroi1.length === 0 || rowsHeroi2.length === 0) {
       return res.status(404).send({
-        message: "Nenhum herói encontrado com esse poder.",
+        message: "Heróis não encontrados.",
       });
     }
-    res.status(200).send({
-      message: "Heróis encontrados com sucesso!",
-      herois: rows,
-    });
+// Extrai informações dos heróis
+    const heroi1 = rowsHeroi1[0];
+    const heroi2 = rowsHeroi2[0];
+// Calcula as vidas restantes dos heróis após a batalha
+    const vidaHeroi1 = heroi1.pontosdevida - heroi2.ataque + heroi1.defesa;
+    const vidaHeroi2 = heroi2.pontosdevida - heroi1.ataque + heroi2.defesa;
+// Determina o vencedor da batalha com base nas vidas restantes
+    if (vidaHeroi1 > vidaHeroi2) {
+      return res.status(200).send({
+        message: `O herói ${heroi1.nome} venceu a batalha!`,
+        heroiVencedor: heroi1,
+      });
+    } else {
+      return res.status(200).send({
+        message: `O herói ${heroi2.nome} venceu a batalha!`,
+        heroiVencedor: heroi2,
+      });
+    }
   } catch (error) {
+// Tratamento de erros durante a execução da rota
     console.error("Erro ao buscar heróis", error);
     res.status(500).send("Erro ao buscar heróis");
   }
 });
 
-// Rota para simular uma batalha entre dois heróis
-app.get("/batalhar/:idHeroi1/:idHeroi2", async (req, res) => {
-  try {
-    const { idHeroi1, idHeroi2 } = req.params;
-
-     // Consulta para selecionar os heróis da batalha
-    const query = `
-      SELECT * FROM herois WHERE id = $1 OR id = $2
-    `;
-
-     // Execução da consulta
-    const { rows } = await pool.query(query, [idHeroi1, idHeroi2]);
-
-    
-    // Verifica se foram encontrados exatamente dois heróis
-    if (rows.length !== 2) {
-      return res.status(404).send("Heróis não encontrados");
-    }
-
-    // Definição dos heróis da batalha
-    const heroi1 = rows[0];
-    const heroi2 = rows[1];
-
-     // Simulação da batalha
-    while (heroi1.pontosdevida > 0 && heroi2.pontosdevida > 0) {
-      heroi2.pontosdevida -= Math.max(heroi1.ataque - heroi2.defesa, 0);
-      heroi1.pontosdevida -= Math.max(heroi2.ataque - heroi1.defesa, 0);
-    }
-
-    
-    // Determinação do vencedor e perdedor da batalha
-    let vencedor, perdedor;
-    if (heroi1.pontosdevida <= 0 && heroi2.pontosdevida <= 0) {
-      vencedor = "Empate";
-    } else if (heroi1.pontosdevida <= 0) {
-      vencedor = heroi2;
-      perdedor = heroi1;
-    } else {
-      vencedor = heroi1;
-      perdedor = heroi2;
-    }
-
-     // Adição do registro de histórico da batalha
-    if (vencedor !== "Empate") {
-      addHistorico(vencedor, perdedor);
-    }
-
-     // Resposta da batalha
-    res.status(200).send({
-      message: "Batalha realizada com sucesso!",
-      vencedor: vencedor,
-    });
-  } catch (error) {
-    console.error("Erro ao realizar batalha", error);
-    res.status(500).send("Erro ao realizar batalha");
-  }
-});
-
-// Função para adicionar um registro de histórico da batalha
-const addHistorico = async (vencedor, perdedor) => {
-   // Obtenção da data atual
-  let data = new Date();
-  data = data.toISOString().split("T")[0];
-  try {
-     // Inserção do registro de histórico no banco de dados
-    await pool.query(
-      "INSERT INTO historico (vencedor, perdedor, data) VALUES ($1, $2, $3)",
-      [vencedor.id, perdedor.id, data]
-    );
-  } catch (error) {
-    console.error("Erro ao adicionar histórico", error);
-  }
-};
-
-// Rota para buscar o histórico de batalhas
+// Rota para obter o histórico de batalhas
 app.get("/historico", async (req, res) => {
   try {
-     // Consulta para selecionar o histórico de batalhas
+ // Consulta ao banco de dados para obter o histórico de batalhas
     const { rows } = await pool.query(
       "SELECT h.nome AS vencedor, h2.nome AS perdedor, data FROM historico JOIN herois h ON h.id = historico.vencedor JOIN herois h2 ON h2.id = historico.perdedor;"
     );
-    // Resposta com o histórico de batalhas
+// Resposta com o histórico de batalhas
     res.status(200).send({
       message: "Histórico de batalhas encontrado com sucesso!",
       historico: rows,
     });
   } catch (error) {
+// Tratamento de erros durante a execução da rota
     console.error("Erro ao buscar histórico", error);
     res.status(500).send("Erro ao buscar histórico");
   }
