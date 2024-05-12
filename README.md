@@ -4,7 +4,7 @@
 
 🦸‍♂️ Projeto sobre super-heróis, utilizando um banco de dados PostgreSQL para possibilitar operações CRUD completas para os heróis. 📚💥🦹‍♂️
 
-<img src="https://t.ctcdn.com.br/SMTDYQzyBcve8QuOkCfEShirdIA=/1200x675/smart/i854309.jpeg" alt="Imagem dos super-heróis da DC">
+<img src="https://assetsio.reedpopcdn.com/DawnofDC_PNahbHU.jpg?width=1200&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp" alt="Imagem dos super-heróis da DC">
 
 <h2>Funcionalidades:</h2>
 

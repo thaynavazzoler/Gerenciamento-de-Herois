@@ -134,6 +134,28 @@ app.get("/herois/nome/:nome", async (req, res) => {
   }
 });
 
+// Rota para buscar heróis pelo poder
+app.get("/herois/poder/:poder", async (req, res) => {
+  try {
+    const { poder } = req.params;
+    const { rows } = await pool.query("SELECT * FROM herois WHERE poder = $1", [
+      poder,
+    ]);
+    if (rows.length === 0) {
+      return res.status(404).send({
+        message: "Nenhum herói encontrado com esse poder.",
+      });
+    }
+    res.status(200).send({
+      message: "Heróis encontrados com sucesso!",
+      herois: rows,
+    });
+  } catch (error) {
+    console.error("Erro ao buscar heróis", error);
+    res.status(500).send("Erro ao buscar heróis");
+  }
+});
+
 // Rota para batalhar dois heróis
 app.get("/batalhar/:idHeroi1/:idHeroi2", async (req, res) => {
   try {
