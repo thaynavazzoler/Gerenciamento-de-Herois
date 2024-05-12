@@ -166,10 +166,14 @@ app.get("/batalhar/:idHeroi1/:idHeroi2", async (req, res) => {
         message: `O herói ${heroi1.nome} venceu a batalha!`,
         heroiVencedor: heroi1,
       });
-    } else {
+    } else if (vidaHeroi2 > vidaHeroi1) {
       return res.status(200).send({
         message: `O herói ${heroi2.nome} venceu a batalha!`,
         heroiVencedor: heroi2,
+      });
+    } else {
+      return res.status(200).send({
+        message: "A batalha terminou em empate.",
       });
     }
   } catch (error) {
@@ -179,10 +183,10 @@ app.get("/batalhar/:idHeroi1/:idHeroi2", async (req, res) => {
   }
 });
 
-// Rota para obter o histórico de batalhas
+// Rota para obter o histórico de batalhas dos herois e empates
 app.get("/historico", async (req, res) => {
   try {
- // Consulta ao banco de dados para obter o histórico de batalhas
+ // Consulta ao banco de dados para obter o histórico de batalhas do perdedor e vencedor, data e empates
     const { rows } = await pool.query(
       "SELECT h.nome AS vencedor, h2.nome AS perdedor, data FROM historico JOIN herois h ON h.id = historico.vencedor JOIN herois h2 ON h2.id = historico.perdedor;"
     );
@@ -192,7 +196,7 @@ app.get("/historico", async (req, res) => {
       historico: rows,
     });
   } catch (error) {
-// Tratamento de erros durante a execução da rota
+// Tratamento de erros
     console.error("Erro ao buscar histórico", error);
     res.status(500).send("Erro ao buscar histórico");
   }
